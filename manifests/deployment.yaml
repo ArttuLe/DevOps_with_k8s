@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-application
+  template:
+    metadata:
+      labels:
+        app: todo-application
+    spec:
+      imagePullSecrets:
+        - name: myregistrykey
+      containers:
+        - name: todo-application
+          image: arskale/todo-application:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "8080"
+          ports:
+            - containerPort: 8080
