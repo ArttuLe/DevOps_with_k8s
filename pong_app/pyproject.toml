@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "devops-with-k8s"
+version = "0.1.0"
+description = ""
+authors = ["arttu@example.com"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.5"
+uvicorn = "^0.32.1"
+asyncio = "^3.4.3"
+uuid = "^1.30"
+logging = "^0.4.9.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

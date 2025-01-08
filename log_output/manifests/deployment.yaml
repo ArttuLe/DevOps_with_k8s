@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-application
+  name: log-output
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: todo-application
+      app: log-output
   template:
     metadata:
       labels:
-        app: todo-application
+        app: log-output
     spec:
       imagePullSecrets:
         - name: myregistrykey
       containers:
-        - name: todo-application
-          image: arskale/todo-application:latest
+        - name: log-output
+          image: arskale/log-output:latest
           imagePullPolicy: Always
           env:
-            - name: PORT
-              value: "8080"
+            - name: UVICORN_PORT
+              value: "3000"
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
