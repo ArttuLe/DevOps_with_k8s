@@ -1,25 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: log-output
+  name: logoutput-reader
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: log-output
+      app: logoutput-reader
   template:
     metadata:
       labels:
-        app: log-output
+        app: logoutput-reader
     spec:
-      imagePullSecrets:
-        - name: myregistrykey
       containers:
-        - name: log-output
-          image: arskale/log-output:latest
+        - name: logoutput-reader
+          image: arskale/log-reader:latest
           imagePullPolicy: Always
           env:
             - name: UVICORN_PORT
               value: "3000"
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: logs-vol
+              mountPath: /app/logs
+        - name: logoutput-writer
+          image: arskale/log-writer:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: logs-vol
+              mountPath: /app/logs
+      volumes:
+        - name: logs-vol
+          persistentVolumeClaim:
+            claimName: logoutput-pv-claim

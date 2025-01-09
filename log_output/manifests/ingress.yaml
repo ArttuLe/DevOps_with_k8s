@@ -6,11 +6,11 @@ spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /status
         pathType: Prefix
         backend:
           service:
-            name: log-output-svc
+            name: logoutput-reader-svc
             port:
               number: 2345
   - http:

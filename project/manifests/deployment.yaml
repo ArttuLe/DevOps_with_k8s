@@ -23,3 +23,10 @@ spec:
               value: "8080"
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: storage-vol
+              mountPath: /app/storage
+      volumes:
+        - name: storage-vol
+          persistentVolumeClaim:
+            claimName: todo-pv-claim
