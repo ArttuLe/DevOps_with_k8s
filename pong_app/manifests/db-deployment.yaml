@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: exercise-db-svc
+  namespace: exercise-namespace
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+      protocol: TCP
+  clusterIP: None
+  selector:
+    app: exercise-db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: exercise-db
+  namespace: exercise-namespace
+spec:
+  serviceName: exercise-db-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exercise-db
+  template:
+    metadata:
+      labels:
+        app: exercise-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16.3-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: pingpong
+          ports:
+            - name: postgres
+              containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

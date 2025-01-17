@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-cron-job
+  namespace: project
+spec:
+  schedule: "@hourly"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: todo-cron
+            image: arskale/todo-cron:latest
+            env:
+            - name: TODO_SERVICE_URL
+              value: "http://todo-backend-svc:2345/todo"
+          restartPolicy: OnFailure

@@ -1,0 +1,4 @@
+pong_app/manifests/secret.yaml
+key.txt
+project/backend/manifests/secret.yaml
+project/app/src/__pycache__/*

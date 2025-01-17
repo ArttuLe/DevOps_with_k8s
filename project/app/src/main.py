@@ -1,4 +1,3 @@
-from asyncio.log import logger
 from contextlib import asynccontextmanager
 import logging
 import os
@@ -9,7 +8,6 @@ import uvicorn
 import requests
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger("TODO app")
 
 HTML_FILE_PATH = "html/index.html"
 CACHE_DIR = "/app/storage"

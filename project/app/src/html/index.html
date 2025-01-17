@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js"></script>
+
+    <style>
+        .todo-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        .todo-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .todo-text {
+            flex: 1;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        <todo-app></todo-app>
+    </div>
+
+    <script type="module">
+        import { LitElement, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
+
+        class TodoApp extends LitElement {
+            static properties = {
+                todos: { type: Array },
+                newTodoText: { type: String }
+            };
+
+            constructor() {
+                super();
+                this.todos = [        
+                    {
+                        id: 1,
+                        text: "First thing to do in the morning",
+                        completed: false
+                    }
+                ];
+                this.newTodoText = '';
+                this.backendUrl = '/todo-backend';
+            }
+
+            createRenderRoot() {
+                return this;
+            }
+            async fetchTodos() {
+                try {
+                    const response = await fetch(`/todo`);
+                    if (!response.ok) throw new Error("Failed to fetch todos");
+                    this.todos = await response.json();
+                } catch (error) {
+                    console.error("Error fetching todos:", error);
+                }
+            }
+            async addTodo(e) {
+                e.preventDefault();
+                if (this.newTodoText.trim().length === 0) {
+                    alert("Todo cannot be empty.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/todo`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            title: this.newTodoText.trim()
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Failed to add todo");
+                    const newTodo = await response.json();
+                    this.todos = [...this.todos, newTodo];
+                    this.newTodoText = '';
+                } catch (error) {
+                    console.error("Error adding todo:", error);
+                }
+            }
+
+            toggleTodo(id) {
+                this.todos = this.todos.map(todo =>
+                    todo.id === id ? { ...todo, completed: !todo.completed } : todo
+                );
+            }
+
+            deleteTodo(id) {
+                this.todos = this.todos.filter(todo => todo.id !== id);
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this.fetchImage('cached_image.jpg');
+                this.fetchTodos();
+            }
+
+            async fetchImage(imageName) {
+                try {
+                    this.imageUrl = `/random-image`;
+                } catch (error) {
+                    console.error('Error fetching image:', error);
+                }
+            }
+            render() {
+                return html`
+                    <sl-card>
+                        <div slot="header">
+                            <h2>Todo</h2>
+                        </div>
+
+                        ${this.imageUrl
+                            ? html`<img src="${this.imageUrl}" alt="Todo Image" style="max-width: 100%;" />`
+                            : html`<p>No image to display.</p>`}
+
+                        <form class="todo-form" @submit=${this.addTodo}>
+                            <sl-input 
+                                placeholder="Add a new todo..."
+                                .value=${this.newTodoText}
+                                @sl-input=${(e) => this.newTodoText = e.target.value}
+                                required
+                            ></sl-input>
+                            <sl-button type="submit" variant="primary">Add</sl-button>
+                        </form>
+
+                        <div class="todo-list">
+                            ${this.todos.map(todo => html`
+                                <div class="todo-item">
+                                    <sl-checkbox
+                                        ?checked=${todo.completed}
+                                        @sl-change=${() => this.toggleTodo(todo.id)}
+                                    ></sl-checkbox>
+                                    <span class="todo-text ${todo.completed ? 'completed' : ''}">
+                                        ${todo.title}
+                                    </span>
+                                    <sl-button 
+                                        variant="danger" 
+                                        size="small"
+                                        @click=${() => this.deleteTodo(todo.id)}
+                                    >
+                                        Delete
+                                    </sl-button>
+                                </div>
+                            `)}
+                        </div>
+
+                        ${this.todos.length === 0 ? html`
+                            <sl-alert variant="neutral" open>
+                                No todos yet. Add one above!
+                            </sl-alert>
+                        ` : ''}
+                    </sl-card>
+                `;
+            }
+        }
+
+        customElements.define('todo-app', TodoApp);
+    </script>
+</body>
+</html>

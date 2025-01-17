@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: exercise-namespace
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: logoutput-reader
+  namespace: exercise-namespace
 spec:
   replicas: 1
   selector:
@@ -19,18 +25,29 @@ spec:
           env:
             - name: UVICORN_PORT
               value: "3000"
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: logoutput-reader-config
+                  key: MESSAGE
           ports:
             - containerPort: 3000
           volumeMounts:
             - name: logs-vol
               mountPath: /app/logs
+            - name: config-vol
+              mountPath: /app/config
         - name: logoutput-writer
           image: arskale/log-writer:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: logs-vol
               mountPath: /app/logs
+              subPath: logs
       volumes:
         - name: logs-vol
           persistentVolumeClaim:
             claimName: logoutput-pv-claim
+        - name: config-vol
+          configMap:
+            name: logoutput-reader-config

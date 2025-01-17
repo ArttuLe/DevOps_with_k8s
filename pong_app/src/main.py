@@ -1,12 +1,25 @@
 import os
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from sqlalchemy import create_engine, Column, Integer
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 pong_state = {"pong": 0}
 pong = 0
-shared_file_path = os.getenv("SHARED_FILE_PATH", "/app/logs/")
-pong_path = shared_file_path + "pongs.txt"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@exercise-db-svc:5432/pingpong")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class Counter(Base):
+    __tablename__ = "counter"
+    id = Column(Integer, primary_key=True, index=True)
+    count = Column(Integer, default=0)
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -16,18 +29,19 @@ def root():
 
 @app.get("/pingpong")
 def status():
-    pong_state["pong"] += 1
-    with open(pong_path, "a") as file:
-        file.write(str(pong_state["pong"])+"\n")
-    return JSONResponse(
-        content={"pong": pong_state["pong"]},
-        status_code=200,
-    )
+    session = SessionLocal()
+    counter = session.query(Counter).first()
+    if not counter:
+        counter = Counter(count=1)
+        session.add(counter)
+        pongs = counter.count
+    else:
+        pongs = counter.count
+        counter.count += 1
+    session.commit()
+    session.close()
+
+    return {"pong_count": pongs}
 
 if __name__ == "__main__":
-    def ensure_file_exists():
-        os.makedirs(os.path.dirname(pong_path), exist_ok=True)
-        if not os.path.exists(pong_path):
-            with open(pong_path, "w") as file:
-                file.write("")
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 3030)), log_level="trace")
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 3030)), log_level="trace") 

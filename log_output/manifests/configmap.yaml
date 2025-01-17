@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: exercise-namespace
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logoutput-reader-config
+  namespace: exercise-namespace
+data:
+  information.txt: |
+    this text is from a file
+  MESSAGE: hello world

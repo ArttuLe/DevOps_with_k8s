@@ -1,17 +1,31 @@
+import logging
 import os
 import hashlib
+import requests
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+logger = logging.getLogger("Log Output App")
 
 app = FastAPI()
 
 shared_file_path = os.getenv("SHARED_FILE_PATH", "/app/logs/")
 logs_path = shared_file_path + "logs.txt"
-pong_path = shared_file_path + "pongs.txt"
+file_path = "/app/config/information.txt"
 
 def calculate_hash(content):
     return hashlib.sha256(content.encode()).hexdigest()
+
+def read_file():
+    try:
+        with open(file_path, "r") as file:
+            return file.read().strip()
+    except FileNotFoundError:
+        logger.error(f"File not found: {file_path}")
+
+        return "File not found"
 
 @app.get("/status")
 def read_logs():
@@ -21,14 +35,20 @@ def read_logs():
         if not lines:
             return JSONResponse(content={"error": "Log file is empty"}, status_code=404)
         latest = lines[-1].strip()
+        file_content = read_file()
+        env_var = os.getenv("MESSAGE", "Not found")
 
-        with open(pong_path, "r") as pong_file:
-            pongs = pong_file.readlines()
-            if not pongs:
-                return JSONResponse(content={"error": "Ping Pong Log file is empty"}, status_code=404)
-        pingpongs = pongs[-1].strip()
+        try:
+            response = requests.get("http://ping-pong-svc:2345/pingpong")
+            data = response.json()
+            pingpongs = data.get("pong_count", 0)
+        except requests.RequestException as error:
+            logger.error(f"Error in requesting pongs from pingpong: {error}")
+
         return JSONResponse(
             content={
+            "file_content": file_content,
+            "env variable": env_var,
             "latest_log": latest,
             "ping / pongs": pingpongs},
             status_code=200,

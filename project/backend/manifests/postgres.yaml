@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-db-svc
+  namespace: project
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+      protocol: TCP
+  clusterIP: None
+  selector:
+    app: project-db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: project-db
+  namespace: project
+spec:
+  serviceName: project-db-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-db
+  template:
+    metadata:
+      labels:
+        app: project-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16.3-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: todoapp
+          ports:
+            - name: postgres
+              containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
