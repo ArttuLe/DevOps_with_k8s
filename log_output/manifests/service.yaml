@@ -4,10 +4,10 @@ metadata:
   name: logoutput-reader-svc
   namespace: exercise-namespace
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: logoutput-reader
   ports:
-    - port: 2345
+    - port: 80
       protocol: TCP
       targetPort: 3000

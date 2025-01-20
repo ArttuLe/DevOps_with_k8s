@@ -4,7 +4,7 @@ metadata:
   name: logoutput-pv-claim
   namespace: exercise-namespace
 spec:
-  storageClassName: logoutput-pv-claim
+  storageClassName: standard-rwo
   accessModes:
     - ReadWriteOnce
   resources:

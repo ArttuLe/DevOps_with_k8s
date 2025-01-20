@@ -25,7 +25,7 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "pong app"}
+    return "Service is up", 200
 
 @app.get("/pingpong")
 def status():

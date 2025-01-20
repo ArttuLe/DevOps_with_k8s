@@ -3,7 +3,7 @@ import os
 import hashlib
 import requests
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -12,7 +12,7 @@ logger = logging.getLogger("Log Output App")
 app = FastAPI()
 
 shared_file_path = os.getenv("SHARED_FILE_PATH", "/app/logs/")
-logs_path = shared_file_path + "logs.txt"
+logs_path = "/app/logs/logs.txt"
 file_path = "/app/config/information.txt"
 
 def calculate_hash(content):
@@ -27,6 +27,10 @@ def read_file():
 
         return "File not found"
 
+@app.get("/")
+def root(request: Request):
+    return "Service is up", 200
+
 @app.get("/status")
 def read_logs():
     try:
@@ -39,7 +43,7 @@ def read_logs():
         env_var = os.getenv("MESSAGE", "Not found")
 
         try:
-            response = requests.get("http://ping-pong-svc:2345/pingpong")
+            response = requests.get("http://ping-pong-svc:80/pingpong")
             data = response.json()
             pingpongs = data.get("pong_count", 0)
         except requests.RequestException as error:
@@ -57,4 +61,4 @@ def read_logs():
         return JSONResponse(content={"error": "Log file not found"}, status_code=404)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 3000)), log_level="trace")
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 3030)), log_level="trace")
