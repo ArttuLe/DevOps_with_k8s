@@ -44,6 +44,10 @@ async def log_requests(request: Request, call_next):
 def health_check():
     return "Service Healthy", 200
 
+@app.get("/")
+def root():
+    return "Backend App", 200
+
 @app.get("/todo")
 def read_todos():
     session = SessionLocal()
