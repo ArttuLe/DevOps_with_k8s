@@ -10,14 +10,14 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: dwk-cluster
   GKE_ZONE: europe-north1-b
-  IMAGE: dwk-environments
-  SERVICE: dwk-environments
-  BRANCH: ${{ github.ref_name }}
 
 jobs:
   build-publish-deploy:
     name: Build, Publish, and Deploy
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: project
 
     steps:
     - name: Checkout
@@ -41,13 +41,13 @@ jobs:
         location: '${{ env.GKE_ZONE }}'
 
     - name: Build Backend Image
-      run: docker build -t "gcr.io/$PROJECT_ID/todo-backend:${{ github.sha }}" ./project/backend
+      run: docker build -t "gcr.io/$PROJECT_ID/todo-backend:${{ github.sha }}" ./backend
 
     - name: Build Frontend Image
-      run: docker build -t "gcr.io/$PROJECT_ID/todo-app:${{ github.sha }}" ./project/app
+      run: docker build -t "gcr.io/$PROJECT_ID/todo-app:${{ github.sha }}" ./app
     
     - name: Build Cronjob Image
-      run: docker build -t "gcr.io/$PROJECT_ID/cronjob:${{ github.sha }}" ./project/todo_cronjob
+      run: docker build -t "gcr.io/$PROJECT_ID/cronjob:${{ github.sha }}" ./todo_cronjob
 
     - name: Push Backend Image
       run: docker push "gcr.io/$PROJECT_ID/todo-backend:${{ github.sha }}"
@@ -67,7 +67,7 @@ jobs:
       run: |
         echo "$SOPS_AGE_KEY_FILE_CONTENT" > key.txt
         export SOPS_AGE_KEY_FILE=$(pwd)/key.txt
-        sops --decrypt project/backend/manifests/secret.enc.yaml | kubectl apply -f -
+        sops --decrypt backend/manifests/secret.enc.yaml | kubectl apply -f -
         rm -f key.txt
 
     - name: Deploy to GKE
