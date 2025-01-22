@@ -13,11 +13,9 @@ spec:
       labels:
         app: todo-backend
     spec:
-      imagePullSecrets:
-        - name: myregistrykey
       containers:
         - name: todo-backend
-          image: arskale/todo-backend:latest
+          image: BACKEND_IMAGE
           imagePullPolicy: Always
           env:
             - name: UVICORN_PORT

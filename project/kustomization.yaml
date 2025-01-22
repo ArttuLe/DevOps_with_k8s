@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - backend/manifests/deployment.yaml
+  - backend/manifests/postgres.yaml
+  - backend/manifests/service.yaml
+  - backend/manifests/cron_job.yaml
+  - app/manifests/deployment.yaml
+  - app/manifests/service.yaml
+  - app/manifests/ingress.yaml
+  - app/manifests/persistentvolumeclaim.yaml
+
+images:
+ - name: APP_IMAGE
+   newName: arskale/todo-application:latest
+ - name: BACKEND_IMAGE
+   newName: arskale/todo-backend:latest
+ - name: CRONJOB
+   newName: arskale/todo-cron:latest

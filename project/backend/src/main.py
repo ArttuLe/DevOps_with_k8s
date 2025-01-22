@@ -40,6 +40,10 @@ async def log_requests(request: Request, call_next):
     logger.info(f"Response status: {response.status_code}")
     return response
 
+@app.get("/health")
+def health_check():
+    return "Service Healthy", 200
+
 @app.get("/todo")
 def read_todos():
     session = SessionLocal()

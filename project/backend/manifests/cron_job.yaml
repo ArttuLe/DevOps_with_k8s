@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: todo-cron
-            image: arskale/todo-cron:latest
+            image: CRONJOB
             env:
             - name: TODO_SERVICE_URL
               value: "http://todo-backend-svc:2345/todo"
