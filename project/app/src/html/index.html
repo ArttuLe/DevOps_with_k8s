@@ -103,6 +103,7 @@
                     const newTodo = await response.json();
                     this.todos = [...this.todos, newTodo];
                     this.newTodoText = '';
+                    await this.fetchTodos();
                 } catch (error) {
                     console.error("Error adding todo:", error);
                 }
