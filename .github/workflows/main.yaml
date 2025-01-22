@@ -66,12 +66,12 @@ jobs:
 
     - name: Set up Kustomize
       uses: imranismail/setup-kustomize@v2.1.0
-    - name: Install sops
+    - name: Setup sops
+      uses: sops-tools/setup-sops-action@v1
+    - name: Verify sops installation
       run: |
-        wget https://github.com/mozilla/sops/releases/latest/download/sops-$(uname -s)-$(uname -m)
-        chmod +x sops-$(uname -s)-$(uname -m)
-        sudo mv sops-$(uname -s)-$(uname -m) /usr/local/bin/sops
-
+        sops --version
+        
     - name: Decrypt secrets with SOPS
       env:
         SOPS_AGE_KEY_FILE_CONTENT: ${{ secrets.SOPS_SECRET }}
