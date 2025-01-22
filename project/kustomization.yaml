@@ -4,6 +4,7 @@ resources:
   - backend/manifests/deployment.yaml
   - backend/manifests/postgres.yaml
   - backend/manifests/service.yaml
+  - backend/manifests/secret.yaml
   - backend/manifests/cron_job.yaml
   - app/manifests/deployment.yaml
   - app/manifests/service.yaml

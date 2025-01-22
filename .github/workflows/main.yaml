@@ -2,8 +2,6 @@ name: Release project app
 
 on:
   push:
-    branches:
-      - main
     paths:
       - 'project/*'
       - '.github/workflows/*'
@@ -76,13 +74,12 @@ jobs:
         sudo chmod +x /usr/bin/sops
         echo "$SOPS_AGE_KEY_FILE_CONTENT" > key.txt
         export SOPS_AGE_KEY_FILE=$(pwd)/key.txt
-        kubectl create namespace project
-        sops --decrypt backend/manifests/secret.enc.yaml | kubectl apply -f -
+        sops --decrypt backend/manifests/secret.enc.yaml > backend_manifests/secret.yaml
         rm -f key.txt
 
     - name: Deploy to GKE
       run: |-
-        kustomize edit set namespace project
+        kustomize edit set namespace default
         kustomize edit set image BACKEND_IMAGE=gcr.io/$PROJECT_ID/todo-backend:${{ github.sha }}
         kustomize edit set image APP_IMAGE=gcr.io/$PROJECT_ID/todo-application:${{ github.sha }}
         kustomize edit set image CRONJOB=gcr.io/$PROJECT_ID/todo-cron:${{ github.sha }}
