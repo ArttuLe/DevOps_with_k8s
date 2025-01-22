@@ -2,14 +2,12 @@ name: Release project app
 
 on:
   push:
-    paths:
-      - '.github/workflows/main.yaml'
-      - 'project*'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: dwk-cluster
   GKE_ZONE: europe-north1-b
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
 
 jobs:
   build-publish-deploy:
@@ -25,7 +23,7 @@ jobs:
 
     - uses: google-github-actions/auth@v2
       with:
-        credentials_json: "${{ secrets.GKE_SA_KEY }}"
+        credentials_json: "${{ env.GKE_SA_KEY }}"
 
     - name: "Set up Cloud SDK"
       uses: google-github-actions/setup-gcloud@v2
