@@ -3,7 +3,7 @@ name: Release project app
 on:
   push:
     paths:
-      - 'project/*'
+      - 'project/**'
       - '.github/workflows/*'
 
 
