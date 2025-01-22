@@ -13,8 +13,6 @@ spec:
       labels:
         app: todo-application
     spec:
-      imagePullSecrets:
-        - name: myregistrykey
       containers:
         - name: todo-application
           image: APP_IMAGE
