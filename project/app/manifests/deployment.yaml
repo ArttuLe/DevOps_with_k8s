@@ -27,6 +27,13 @@ spec:
           volumeMounts:
             - name: storage-vol
               mountPath: /app/storage
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "100m"
+            limits:
+              memory: "300Mi"
+              cpu: "100m"
       volumes:
         - name: storage-vol
           persistentVolumeClaim:

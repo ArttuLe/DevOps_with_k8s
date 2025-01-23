@@ -24,6 +24,13 @@ spec:
               value: "3030"
           ports:
             - containerPort: 3030
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "100m"
+            limits:
+              memory: "300Mi"
+              cpu: "100m"
           volumeMounts:
             - name: logs-vol
               mountPath: /app/logs

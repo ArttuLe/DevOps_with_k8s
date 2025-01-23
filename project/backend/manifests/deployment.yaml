@@ -19,6 +19,13 @@ spec:
         - name: todo-backend
           image: BACKEND_IMAGE
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "100m"
+            limits:
+              memory: "300Mi"
+              cpu: "100m"
           env:
             - name: UVICORN_PORT
               value: "8000"
