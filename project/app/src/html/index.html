@@ -109,13 +109,47 @@
                 }
             }
 
-            toggleTodo(id) {
-                this.todos = this.todos.map(todo =>
-                    todo.id === id ? { ...todo, completed: !todo.completed } : todo
-                );
+            async toggleTodo(id) {
+                try {
+                    const todo = this.todos.find(todo => todo.id === id);
+                    if (!todo) {
+                        alert("Todo not found.");
+                        return;
+                    }
+                    const updatedCompletedStatus = !todo.completed;
+
+                    const response = await fetch(`/todo/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            completed: updatedCompletedStatus
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Failed to update todo");
+
+                    this.todos = this.todos.map(todo =>
+                        todo.id === id ? { ...todo, completed: updatedCompletedStatus } : todo
+                    );
+                } catch (error) {
+                    console.error("Error updating todo:", error);
+                    alert("Failed to update todo. Please try again.");
+                }
             }
 
-            deleteTodo(id) {
+            async deleteTodo(id) {
+                try {
+                    const response = await fetch(`/todo`, {
+                        method: "DELETE",
+                    });
+
+                    if (!response.ok) throw new Error("Failed to delete todo");
+                    await this.fetchTodos();
+                } catch (error) {
+                    console.error("Error deleting todo:", error);
+                }
                 this.todos = this.todos.filter(todo => todo.id !== id);
             }
             connectedCallback() {
