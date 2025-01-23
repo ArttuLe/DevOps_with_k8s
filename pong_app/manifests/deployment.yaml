@@ -22,6 +22,19 @@ spec:
           env:
             - name: UVICORN_PORT
               value: "3030"
+            - name: POSTGRES_HOST
+              value: exercise-db-svc
+            - name: POSTGRES_PORT
+              value: 5432
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: pingpong
           ports:
             - containerPort: 3030
           resources:
@@ -34,6 +47,20 @@ spec:
           volumeMounts:
             - name: logs-vol
               mountPath: /app/logs
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - >
+                  PGPASSWORD=$POSTGRES_PASSWORD pg_isready
+                  -h $POSTGRES_HOST
+                  -p $POSTGRES_PORT
+                  -U $POSTGRES_USER
+                  -d $POSTGRES_DB
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
       volumes:
         - name: logs-vol
           persistentVolumeClaim:

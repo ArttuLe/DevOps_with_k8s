@@ -17,6 +17,13 @@ spec:
         - name: logoutput-reader
           image: arskale/log-reader:latest
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "100m"
+            limits:
+              memory: "300Mi"
+              cpu: "100m"
           env:
             - name: UVICORN_PORT
               value: "3000"
@@ -32,6 +39,15 @@ spec:
               mountPath: /app/logs
             - name: config-vol
               mountPath: /app/config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
         - name: logoutput-writer
           image: arskale/log-writer:latest
           imagePullPolicy: Always

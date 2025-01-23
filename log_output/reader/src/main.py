@@ -31,6 +31,11 @@ def read_file():
 def root(request: Request):
     return "Service is up", 200
 
+@app.get("/health")
+def health():
+    response = requests.get("http://ping-pong-svc:80/health")
+    return "Service is up", response.status_code
+
 @app.get("/status")
 def read_logs():
     try:
