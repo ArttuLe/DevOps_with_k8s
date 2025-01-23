@@ -42,12 +42,8 @@ spec:
               command:
                 - sh
                 - -c
-                - >
-                  PGPASSWORD=$POSTGRES_PASSWORD pg_isready
-                  -h $POSTGRES_HOST
-                  -p $POSTGRES_PORT
-                  -U $POSTGRES_USER
-                  -d $POSTGRES_DB
+                - PGPASSWORD=$POSTGRES_PASSWORD psql -w -U $POSTGRES_USER -d $POSTGRES_DB  -h
+              $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT 1"
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
