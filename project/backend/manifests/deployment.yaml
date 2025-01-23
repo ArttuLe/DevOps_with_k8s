@@ -29,21 +29,11 @@ spec:
           env:
             - name: UVICORN_PORT
               value: "8000"
-            - name: POSTGRES_HOST
-              value: exercise-db-svc
-            - name: POSTGRES_PORT
-              value: "5432"
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_DB
-              value: todoapp
           readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - PGPASSWORD=$POSTGRES_PASSWORD psql -w -U $POSTGRES_USER -d $POSTGRES_DB  -h
-              $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT 1"
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3

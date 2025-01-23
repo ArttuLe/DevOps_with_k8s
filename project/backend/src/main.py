@@ -50,6 +50,12 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/health")
 def health_check():
+    try:
+        session = SessionLocal()
+        session.execute("SELECT 1")
+        session.close()
+    except Exception as e:
+        logger.info("Not healthy: %s", e)
     return "Service Healthy", 200
 
 @app.get("/")
