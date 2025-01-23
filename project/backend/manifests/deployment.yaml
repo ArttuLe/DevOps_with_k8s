@@ -31,4 +31,3 @@ spec:
               value: "8000"
           ports:
             - containerPort: 8000
-
