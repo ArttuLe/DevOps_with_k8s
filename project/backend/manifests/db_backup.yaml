@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: db-backup
-            image: arskale/db_backup:latest
+            image: DB_BACKUP
             env:
             - name: URL
               value: "postgresql://postgres:postgres@project-db-svc:5432/todoapp"
