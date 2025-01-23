@@ -141,16 +141,16 @@
 
             async deleteTodo(id) {
                 try {
-                    const response = await fetch(`/todo`, {
+                    const response = await fetch(`/todo/${id}`, {
                         method: "DELETE",
                     });
 
                     if (!response.ok) throw new Error("Failed to delete todo");
                     await this.fetchTodos();
+                    this.todos = this.todos.filter(todo => todo.id !== id);
                 } catch (error) {
                     console.error("Error deleting todo:", error);
                 }
-                this.todos = this.todos.filter(todo => todo.id !== id);
             }
             connectedCallback() {
                 super.connectedCallback();
