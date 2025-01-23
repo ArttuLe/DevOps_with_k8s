@@ -27,6 +27,14 @@ spec:
           volumeMounts:
             - name: storage-vol
               mountPath: /app/storage
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: "300Mi"
