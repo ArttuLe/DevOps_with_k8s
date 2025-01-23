@@ -1,5 +1,6 @@
 # DevOps_with_k8s
 
+## See images folder for pictures related to certain exercises
 
 # Secret handling
 
@@ -47,3 +48,7 @@ Cons:
  - More time spent on configuring and maintenance
  - Need to manage upkeep of all things, e.g., backups
  - Costs( Might get costly )
+
+ # Exercise 4.03
+
+ - Query that was used in prometheus " sum(kube_pod_info{namespace="prometheus", created_by_kind="StatefulSet"})"
