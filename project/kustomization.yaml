@@ -19,5 +19,5 @@ images:
    newName: arskale/todo-backend:latest
  - name: CRONJOB
    newName: arskale/todo-cron:latest
-  - name: DB_BACKUP
+ - name: DB_BACKUP
    newName: arskale/db_backup:latest
