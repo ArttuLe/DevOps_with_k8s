@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import uvicorn
@@ -52,10 +52,12 @@ async def log_requests(request: Request, call_next):
 def health_check():
     try:
         session = SessionLocal()
-        session.execute("SELECT 1")
+        session.execute(text('SELECT 1'))
         session.close()
     except Exception as e:
         logger.info("Not healthy: %s", e)
+        return "Not Healthy", 500
+    
     return "Service Healthy", 200
 
 @app.get("/")
