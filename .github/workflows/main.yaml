@@ -53,6 +53,9 @@ jobs:
     - name: Build Cronjob Image
       run: docker build -t "gcr.io/$PROJECT_ID/todo-cron:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" ./todo_cronjob
 
+    - name: Build backupdb Image
+      run: docker build -t "gcr.io/$PROJECT_ID/backup-db:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" ./db_backup
+
     - name: Push Backend Image
       run: docker push "gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
@@ -61,6 +64,9 @@ jobs:
 
     - name: Push Cronjob Image
       run: docker push "gcr.io/$PROJECT_ID/todo-cron:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+    - name: Push DB backup job
+      run: docker push "gcr.io/$PROJECT_ID/backup-db:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
     - name: Set up Kustomize
       uses: imranismail/setup-kustomize@v2.1.0
@@ -92,6 +98,7 @@ jobs:
         kustomize edit set image BACKEND_IMAGE=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kustomize edit set image APP_IMAGE=gcr.io/$PROJECT_ID/todo-application:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
         kustomize edit set image CRONJOB=gcr.io/$PROJECT_ID/todo-cron:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+        kustomize edit set image DB_BACKUP=gcr.io/$PROJECT_ID/backup-db:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
 
         kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/todo-backend

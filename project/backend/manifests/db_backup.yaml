@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: db-backup
+            image: arskale/db_backup:latest
+            env:
+            - name: URL
+              value: "postgresql://postgres:postgres@project-db-svc:5432/todoapp"
+            volumeMounts:
+            - name: gcp-key
+              mountPath: /secret
+              readOnly: true
+            command: ["/bin/bash", "-c", "/usr/src/app/backup-script.sh"]
+          restartPolicy: OnFailure
+          volumes:
+          - name: gcp-key
+            secret:
+              secretName: gcp-storage-secret

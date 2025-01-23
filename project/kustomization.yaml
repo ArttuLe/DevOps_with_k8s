@@ -6,6 +6,7 @@ resources:
   - backend/manifests/service.yaml
   - backend/manifests/secret.yaml
   - backend/manifests/cron_job.yaml
+  - backend/manifests/db_backup.yaml
   - app/manifests/deployment.yaml
   - app/manifests/service.yaml
   - app/manifests/ingress.yaml
@@ -18,3 +19,5 @@ images:
    newName: arskale/todo-backend:latest
  - name: CRONJOB
    newName: arskale/todo-cron:latest
+  - name: DB_BACKUP
+   newName: arskale/db_backup:latest
