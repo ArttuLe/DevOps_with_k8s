@@ -69,14 +69,17 @@ def create_todo(todo: TodoCreate):
     logger.info(f"Todo created with id: {todo.id}")
     session.close()
     return {"message": "Todo created"}
+class UpdateTodoRequest(BaseModel):
+    completed: bool
 
 @app.put("/todo/{todo_id}")
-def update_todo(todo_id: int, completed: bool):
+def update_todo(todo_id: int, request: UpdateTodoRequest):
     session = SessionLocal()
     todo = session.query(Todo).filter(Todo.id == todo_id).first()
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
-    todo.completed = completed
+    todo.completed = request.completed
+    logger.info(f"Todo updated to status: {request.completed}")
     session.commit()
     session.close()
     return {"message": "Todo updated"}
