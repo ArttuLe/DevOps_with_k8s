@@ -1,7 +1,7 @@
 import os
 import uvicorn
 from fastapi import FastAPI
-from sqlalchemy import create_engine, Column, Integer
+from sqlalchemy import create_engine, Column, Integer, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -26,6 +26,16 @@ app = FastAPI()
 @app.get("/")
 def root():
     return "Service is up", 200
+
+@app.get("/health")
+def health_check():
+    try:
+        session = SessionLocal()
+        session.execute(text('SELECT 1'))
+        session.close()
+    except Exception:
+        return "Not Healthy", 500
+    return "Service Healthy", 200
 
 @app.get("/pingpong")
 def status():
